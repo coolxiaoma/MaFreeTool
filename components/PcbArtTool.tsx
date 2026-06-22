@@ -6,17 +6,17 @@ import {
     quantizeImageData,
     renderArtwork,
     renderBinaryMask,
-    renderSeparationArtwork,
 } from '../utils/pcbArt';
 
 type PreviewKey =
     | 'artwork'
     | 'original'
-    | 'copper'
-    | 'solderMaskOpening'
-    | 'backSolderMaskOpening'
-    | 'silkscreen';
-type GeneratedKey = Exclude<PreviewKey, 'original'> | 'separation' | `color${number}`;
+    | 'topLayer'
+    | 'topSilkscreen'
+    | 'topSolderMask'
+    | 'bottomSolderMask'
+    | 'bottomLayer';
+type GeneratedKey = Exclude<PreviewKey, 'original'>;
 
 interface ProcessedResult {
     width: number;
@@ -29,20 +29,34 @@ interface ProcessedResult {
 const PREVIEW_TABS: { id: PreviewKey; label: string; icon: string }[] = [
     { id: 'artwork', label: '板材效果', icon: 'developer_board' },
     { id: 'original', label: '原图', icon: 'image' },
-    { id: 'copper', label: '铜皮', icon: 'layers' },
-    { id: 'solderMaskOpening', label: '正面开窗', icon: 'crop_free' },
-    { id: 'backSolderMaskOpening', label: '背面开窗', icon: 'flip' },
-    { id: 'silkscreen', label: '丝印', icon: 'format_paint' },
+    { id: 'topLayer', label: '顶层', icon: 'layers' },
+    { id: 'topSilkscreen', label: '顶层丝印', icon: 'format_paint' },
+    { id: 'topSolderMask', label: '顶层阻焊', icon: 'crop_free' },
+    { id: 'bottomSolderMask', label: '底层阻焊', icon: 'flip' },
+    { id: 'bottomLayer', label: '底层', icon: 'layers' },
 ];
 
 const MATERIALS: { key: MaterialKey; label: string; shortLabel: string }[] = [
-    { key: 'copper', label: '正面铜皮', shortLabel: '铜' },
-    { key: 'solderMask', label: '正面阻焊', shortLabel: '正阻' },
-    { key: 'backSolderMask', label: '背面阻焊', shortLabel: '背阻' },
-    { key: 'silkscreen', label: '白色丝印', shortLabel: '丝印' },
+    { key: 'topLayer', label: '顶层', shortLabel: '顶层' },
+    { key: 'topSilkscreen', label: '顶层丝印层', shortLabel: '顶丝' },
+    { key: 'topSolderMask', label: '顶层阻焊层', shortLabel: '顶阻' },
+    { key: 'bottomSolderMask', label: '底层阻焊层', shortLabel: '底阻' },
+    { key: 'bottomLayer', label: '底层', shortLabel: '底层' },
 ];
 
 const MAX_OUTPUT_DIMENSION = 3600;
+const MANUFACTURING_LAYERS: {
+    key: Exclude<GeneratedKey, 'artwork'>;
+    label: string;
+    filename: string;
+    icon: string;
+}[] = [
+    { key: 'topLayer', label: '顶层', filename: '顶层', icon: 'layers' },
+    { key: 'topSilkscreen', label: '顶层丝印', filename: '顶层丝印层', icon: 'format_paint' },
+    { key: 'topSolderMask', label: '顶层阻焊', filename: '顶层阻焊层', icon: 'crop_free' },
+    { key: 'bottomSolderMask', label: '底层阻焊', filename: '底层阻焊层', icon: 'flip' },
+    { key: 'bottomLayer', label: '底层', filename: '底层', icon: 'layers' },
+];
 
 const canvasToBlob = (imageData: ImageData): Promise<Blob> =>
     new Promise((resolve, reject) => {
@@ -186,54 +200,54 @@ const PcbArtTool: React.FC = () => {
 
             const blobs = {} as ProcessedResult['blobs'];
             blobs.artwork = await canvasToBlob(
-                renderArtwork(quantized.labels, width, height, sourceData)
+                renderArtwork(
+                    quantized.labels,
+                    width,
+                    height,
+                    sourceData,
+                    quantized.mappingMode
+                )
             );
-            blobs.separation = await canvasToBlob(
-                renderSeparationArtwork(quantized.labels, width, height)
-            );
-            blobs.copper = await canvasToBlob(
+            blobs.topLayer = await canvasToBlob(
                 renderBinaryMask(
                     quantized.labels,
                     width,
                     height,
-                    label => PCB_ART_COLORS[label].recipe.copper
+                    label => PCB_ART_COLORS[label].recipe.topLayer
                 )
             );
-            blobs.solderMaskOpening = await canvasToBlob(
+            blobs.topSilkscreen = await canvasToBlob(
                 renderBinaryMask(
                     quantized.labels,
                     width,
                     height,
-                    label => !PCB_ART_COLORS[label].recipe.solderMask
+                    label => PCB_ART_COLORS[label].recipe.topSilkscreen
                 )
             );
-            blobs.backSolderMaskOpening = await canvasToBlob(
+            blobs.topSolderMask = await canvasToBlob(
                 renderBinaryMask(
                     quantized.labels,
                     width,
                     height,
-                    label => !PCB_ART_COLORS[label].recipe.backSolderMask
+                    label => PCB_ART_COLORS[label].recipe.topSolderMask
                 )
             );
-            blobs.silkscreen = await canvasToBlob(
+            blobs.bottomSolderMask = await canvasToBlob(
                 renderBinaryMask(
                     quantized.labels,
                     width,
                     height,
-                    label => PCB_ART_COLORS[label].recipe.silkscreen
+                    label => PCB_ART_COLORS[label].recipe.bottomSolderMask
                 )
             );
-
-            for (let index = 0; index < PCB_ART_COLORS.length; index += 1) {
-                blobs[`color${index}`] = await canvasToBlob(
-                    renderBinaryMask(
-                        quantized.labels,
-                        width,
-                        height,
-                        label => label === index
-                    )
-                );
-            }
+            blobs.bottomLayer = await canvasToBlob(
+                renderBinaryMask(
+                    quantized.labels,
+                    width,
+                    height,
+                    label => PCB_ART_COLORS[label].recipe.bottomLayer
+                )
+            );
 
             if (currentJobId !== jobIdRef.current) return;
 
@@ -289,50 +303,9 @@ const PcbArtTool: React.FC = () => {
         try {
             const zip = new JSZip();
             const baseName = safeFilename(selectedFile.name);
-            zip.file(`${baseName}_参考板效果.png`, result.blobs.artwork);
-            zip.file(`${baseName}_六色分色稿.png`, result.blobs.separation);
-
-            const manufacturing = zip.folder('01_制版图');
-            manufacturing?.file(`${baseName}_顶层铜皮.png`, result.blobs.copper);
-            manufacturing?.file(`${baseName}_正面阻焊开窗.png`, result.blobs.solderMaskOpening);
-            manufacturing?.file(`${baseName}_背面阻焊开窗.png`, result.blobs.backSolderMaskOpening);
-            manufacturing?.file(`${baseName}_顶层丝印.png`, result.blobs.silkscreen);
-
-            const separations = zip.folder('02_六色分离');
-            PCB_ART_COLORS.forEach((color, index) => {
-                separations?.file(
-                    `${index + 1}_${color.name.replace(/[^\w\u4e00-\u9fa5-]+/g, '_')}.png`,
-                    result.blobs[`color${index}`]
-                );
+            MANUFACTURING_LAYERS.forEach(layer => {
+                zip.file(`${baseName}_${layer.filename}.png`, result.blobs[layer.key]);
             });
-
-            const recipeLines = PCB_ART_COLORS.map((color, index) => {
-                const layers = MATERIALS
-                    .filter(material => color.recipe[material.key])
-                    .map(material => material.label)
-                    .join(' + ') || '仅基材';
-                return `${index + 1}. ${color.name}（判定色 ${color.matchHex} / 成品色 ${color.displayHex}）: ${layers}`;
-            });
-
-            zip.file(
-                'README_制版说明.txt',
-                [
-                    'PCB 艺术画制版包',
-                    '',
-                    `源文件: ${selectedFile.name}`,
-                    `输出尺寸: ${result.width} x ${result.height} px`,
-                    '',
-                    '黑白图约定:',
-                    '- 白色表示该层需要保留的铜皮、需要开窗的阻焊或需要印刷的丝印。',
-                    '- 黑色表示该层不处理。',
-                    '- 阻焊文件导出的是开窗图，不是阻焊覆盖图。',
-                    '',
-                    '六色材料配方:',
-                    ...recipeLines,
-                    '',
-                    '送厂前请根据板厂的 Gerber 极性、最小线宽和最小间距要求再次检查。',
-                ].join('\n')
-            );
 
             const zipBlob = await zip.generateAsync({
                 type: 'blob',
@@ -359,7 +332,7 @@ const PcbArtTool: React.FC = () => {
                     PCB 艺术画
                 </p>
                 <p className="text-sm font-normal text-gray-500 dark:text-gray-400">
-                    复刻参考板的蓝色阻焊、裸铜、基材与白色丝印组合
+                    自动生成顶层、顶层丝印、顶层阻焊、底层阻焊和底层
                 </p>
             </div>
 
@@ -429,7 +402,7 @@ const PcbArtTool: React.FC = () => {
                             </button>
                         </div>
 
-                        <div className="grid h-10 flex-none grid-cols-6 border-b border-gray-200 bg-gray-50/50 px-2 dark:border-gray-700/50 dark:bg-gray-800/20">
+                        <div className="grid h-10 flex-none grid-cols-7 border-b border-gray-200 bg-gray-50/50 px-2 dark:border-gray-700/50 dark:bg-gray-800/20">
                             {PREVIEW_TABS.map(tab => (
                                 <button
                                     key={tab.id}
@@ -501,7 +474,7 @@ const PcbArtTool: React.FC = () => {
                         <div className="flex items-center justify-between gap-2">
                             <h2 className="flex items-center gap-1.5 text-sm font-semibold text-gray-900 dark:text-white">
                                 <span className="material-symbols-outlined text-lg">verified</span>
-                                固定六色工艺
+                                五层 PCB 工艺
                             </h2>
                             <span className="rounded-lg bg-primary/10 px-2.5 py-1.5 text-[10px] font-semibold text-primary">
                                 参考板基准
@@ -511,7 +484,7 @@ const PcbArtTool: React.FC = () => {
                         <div className="border-t border-gray-200 pt-3 dark:border-gray-700/50">
                             <h2 className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-gray-900 dark:text-white">
                                 <span className="material-symbols-outlined text-lg">palette</span>
-                                六种真实材料色
+                                六色判定结果
                             </h2>
 
                             <div className="grid grid-cols-2 gap-2">
@@ -564,33 +537,26 @@ const PcbArtTool: React.FC = () => {
                                 ) : (
                                     <>
                                         <span className="material-symbols-outlined text-lg">folder_zip</span>
-                                        下载完整制版包
+                                        下载五层制版包
                                     </>
                                 )}
                             </button>
-                            <div className="mt-2 grid grid-cols-2 gap-2">
-                                <button
-                                    type="button"
-                                    disabled={!result}
-                                    onClick={() => result && downloadBlob(result.blobs.artwork, `${baseName}_参考板效果.png`)}
-                                    className="flex h-8 items-center justify-center gap-1 rounded-lg border border-gray-200 text-[10px] font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
-                                >
-                                    <span className="material-symbols-outlined text-sm">image</span>
-                                    预览图
-                                </button>
-                                <button
-                                    type="button"
-                                    disabled={!result}
-                                    onClick={() => {
-                                        if (!result) return;
-                                        const key = activePreview === 'original' ? 'artwork' : activePreview;
-                                        downloadBlob(result.blobs[key], `${baseName}_${key}.png`);
-                                    }}
-                                    className="flex h-8 items-center justify-center gap-1 rounded-lg border border-gray-200 text-[10px] font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
-                                >
-                                    <span className="material-symbols-outlined text-sm">download</span>
-                                    当前图层
-                                </button>
+                            <div className="mt-2 grid grid-cols-3 gap-2">
+                                {MANUFACTURING_LAYERS.map(layer => (
+                                    <button
+                                        key={layer.key}
+                                        type="button"
+                                        disabled={!result}
+                                        onClick={() => result && downloadBlob(
+                                            result.blobs[layer.key],
+                                            `${baseName}_${layer.filename}.png`
+                                        )}
+                                        className="flex h-8 min-w-0 items-center justify-center gap-1 rounded-lg border border-gray-200 px-1 text-[10px] font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+                                    >
+                                        <span className="material-symbols-outlined text-sm">{layer.icon}</span>
+                                        <span className="truncate">{layer.label}</span>
+                                    </button>
+                                ))}
                             </div>
                         </div>
                     </aside>
