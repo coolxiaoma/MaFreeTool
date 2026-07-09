@@ -24,6 +24,8 @@
     "pptxgenjs": "^4.0.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "turndown": "^7.2.4",
+    "turndown-plugin-gfm": "^1.0.2",
     "web-vitals": "^5.1.0"
   },
   "devDependencies": {
@@ -32,6 +34,7 @@
     "@types/node": "^22.14.0",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
+    "@types/turndown": "^5.0.6",
     "@vitejs/plugin-react": "^5.0.0",
     "autoprefixer": "^10.4.22",
     "gif.js": "^0.2.0",
