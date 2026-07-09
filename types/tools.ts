@@ -25,4 +25,5 @@ export type ToolType =
     | 'mind-map'
     | 'drawing'
     | 'vram-calculator'
-    | 'pcb-art';
+    | 'pcb-art'
+    | 'markdown-editor';

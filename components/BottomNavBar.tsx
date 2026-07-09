@@ -90,6 +90,11 @@ const TOOLS: Tool[] = [
         icon: 'photo_library',
     },
     {
+        id: 'markdown-editor',
+        name: 'MD',
+        icon: 'edit_note',
+    },
+    {
         id: 'resume-generator',
         name: '简历',
         icon: 'description',

@@ -31,6 +31,7 @@ const MindMapTool = lazy(() => import('./components/MindMapTool'));
 const DrawingTool = lazy(() => import('./components/DrawingTool'));
 const VRAMCalculatorTool = lazy(() => import('./components/VRAMCalculatorTool'));
 const PcbArtTool = lazy(() => import('./components/PcbArtTool'));
+const MarkdownEditorTool = lazy(() => import('./components/MarkdownEditorTool'));
 
 // 获取资源路径的辅助函数
 const getAssetUrl = (path: string) => {
@@ -42,7 +43,7 @@ const getAssetUrl = (path: string) => {
 const PINNED_TOOLS_KEY = 'freetool-pinned-tools';
 const ACTIVE_TOOL_KEY = 'freetool-active-tool';
 
-type CategoryType = 'text' | 'image' | 'data' | 'media' | 'ai';
+type CategoryType = 'text' | 'image' | 'data' | 'media' | 'markdown' | 'ai';
 
 interface Tool {
     id: ToolType;
@@ -67,6 +68,14 @@ interface ContextMenuState {
 }
 
 const TOOL_CATEGORIES: ToolCategory[] = [
+    {
+        id: 'markdown',
+        name: 'Markdown 工具',
+        icon: 'markdown',
+        tools: [
+            { id: 'markdown-editor', name: 'Markdown 编辑器', icon: 'edit_note', component: MarkdownEditorTool },
+        ],
+    },
     {
         id: 'text',
         name: '文本工具',
@@ -197,7 +206,7 @@ const App: React.FC = () => {
         saveActiveTool(toolId);
     }, []);
     const [showAboutDialog, setShowAboutDialog] = useState(false);
-    const [expandedCategories, setExpandedCategories] = useState<CategoryType[]>(['text', 'image', 'data', 'media', 'ai']);
+    const [expandedCategories, setExpandedCategories] = useState<CategoryType[]>(['text', 'image', 'data', 'media', 'markdown', 'ai']);
     const [pinnedTools, setPinnedTools] = useState<ToolType[]>(loadPinnedTools);
     const [pinnedExpanded, setPinnedExpanded] = useState(true);
     const [contextMenu, setContextMenu] = useState<ContextMenuState>({
