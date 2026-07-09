@@ -343,16 +343,16 @@ const App: React.FC = () => {
                 {/* 顶部：Logo 和标题 - 固定 */}
                 <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                     <picture>
-                        <source srcSet={getAssetUrl('assets/logo.webp')} type="image/webp" />
+                        <source srcSet={getAssetUrl('favicon.ico')} type="image/ico" />
                         <img
-                            src={getAssetUrl('logo.png')}
+                            src={getAssetUrl('favicon.ico')}
                             alt="FreeTool Logo"
                             className="w-10 h-10 rounded-lg object-cover"
                             loading="eager"
                         />
                     </picture>
                     <div className="flex flex-col">
-                        <h1 className="text-gray-900 dark:text-gray-100 text-base font-medium leading-normal">FreeTool 工具箱</h1>
+                        <h1 className="text-gray-900 dark:text-gray-100 text-base font-medium leading-normal">MaFreeTool 工具箱</h1>
                         <p className="text-gray-500 dark:text-gray-400 text-sm font-normal leading-normal">在线小工具</p>
                     </div>
                 </div>

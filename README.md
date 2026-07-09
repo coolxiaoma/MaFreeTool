@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="public/assets/logo_with_text.png" alt="MaFreeTool Logo" width="500"/>
+  <img src="public/assets/MaFreeTool.png" alt="MaFreeTool Logo" width="500"/>
 
   **MaFreeTool** — 基于 [FreeTool](https://github.com/zstar1003/FreeTool) 的纯前端多功能在线工具站。
 
@@ -24,6 +24,9 @@
 | 上游在线演示 | [xdxsb.top/FreeTool](https://xdxsb.top/FreeTool) · [tool.zstar.website](https://tool.zstar.website) |
 
 ## 功能一览
+
+## Markdown工具
+ - markdown编辑器
 
 ### 文本工具
 
