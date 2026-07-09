@@ -33,6 +33,7 @@ const VRAMCalculatorTool = lazy(() => import('./components/VRAMCalculatorTool'))
 const PcbArtTool = lazy(() => import('./components/PcbArtTool'));
 const MarkdownEditorTool = lazy(() => import('./components/MarkdownEditorTool'));
 const HtmlToMarkdownTool = lazy(() => import('./components/HtmlToMarkdownTool'));
+const IcoGeneratorTool = lazy(() => import('./components/IcoGeneratorTool'));
 
 // 获取资源路径的辅助函数
 const getAssetUrl = (path: string) => {
@@ -96,6 +97,7 @@ const TOOL_CATEGORIES: ToolCategory[] = [
         name: '图片工具',
         icon: 'image',
         tools: [
+            { id: 'ico-generator', name: 'ICO图标生成器', icon: 'web_asset', component: IcoGeneratorTool },
             { id: 'image-converter', name: '图片格式转换', icon: 'image', component: ImageConverterTool },
             { id: 'ai-image-detection', name: 'AI图片检测', icon: 'policy', component: AIImageDetectionTool },
             { id: 'image-editor', name: '图片快速编辑', icon: 'edit', component: ImageEditorTool },

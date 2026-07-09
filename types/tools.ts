@@ -27,4 +27,5 @@ export type ToolType =
     | 'vram-calculator'
     | 'pcb-art'
     | 'markdown-editor'
-    | 'html-to-markdown';
+    | 'html-to-markdown'
+    | 'ico-generator';
