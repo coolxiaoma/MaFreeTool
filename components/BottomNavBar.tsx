@@ -95,6 +95,11 @@ const TOOLS: Tool[] = [
         icon: 'edit_note',
     },
     {
+        id: 'mermaid-diagram',
+        name: 'Mermaid',
+        icon: 'account_tree',
+    },
+    {
         id: 'resume-generator',
         name: '简历',
         icon: 'description',

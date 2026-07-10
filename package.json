@@ -20,6 +20,7 @@
     "jszip": "^3.10.1",
     "mammoth": "^1.11.0",
     "marked": "^18.0.5",
+    "mermaid": "^11.16.0",
     "pdfjs-dist": "^5.4.449",
     "pptxgenjs": "^4.0.1",
     "react": "^19.2.0",

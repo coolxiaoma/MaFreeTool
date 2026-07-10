@@ -34,6 +34,7 @@ const PcbArtTool = lazy(() => import('./components/PcbArtTool'));
 const MarkdownEditorTool = lazy(() => import('./components/MarkdownEditorTool'));
 const HtmlToMarkdownTool = lazy(() => import('./components/HtmlToMarkdownTool'));
 const IcoGeneratorTool = lazy(() => import('./components/IcoGeneratorTool'));
+const MermaidDiagramTool = lazy(() => import('./components/MermaidDiagramTool'));
 
 // 获取资源路径的辅助函数
 const getAssetUrl = (path: string) => {
@@ -77,6 +78,7 @@ const TOOL_CATEGORIES: ToolCategory[] = [
         tools: [
             { id: 'markdown-editor', name: 'Markdown 编辑器', icon: 'edit_note', component: MarkdownEditorTool },
             { id: 'html-to-markdown', name: 'HTML 转 MD', icon: 'html', component: HtmlToMarkdownTool },
+            { id: 'mermaid-diagram', name: 'Mermaid 图表', icon: 'account_tree', component: MermaidDiagramTool },
         ],
     },
     {

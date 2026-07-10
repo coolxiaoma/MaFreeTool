@@ -28,4 +28,5 @@ export type ToolType =
     | 'pcb-art'
     | 'markdown-editor'
     | 'html-to-markdown'
-    | 'ico-generator';
+    | 'ico-generator'
+    | 'mermaid-diagram'
