@@ -100,6 +100,11 @@ const TOOLS: Tool[] = [
         icon: 'account_tree',
     },
     {
+        id: 'markdown-to-wechat',
+        name: '公众号',
+        icon: 'article',
+    },
+    {
         id: 'resume-generator',
         name: '简历',
         icon: 'description',

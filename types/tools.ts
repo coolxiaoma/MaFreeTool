@@ -30,3 +30,4 @@ export type ToolType =
     | 'html-to-markdown'
     | 'ico-generator'
     | 'mermaid-diagram'
+    | 'markdown-to-wechat'
