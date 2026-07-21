@@ -37,6 +37,7 @@ const IcoGeneratorTool = lazy(() => import('./components/IcoGeneratorTool'));
 const MermaidDiagramTool = lazy(() => import('./components/MermaidDiagramTool'));
 const MarkdownToWechatTool = lazy(() => import('./components/MarkdownToWechatTool'));
 const CoordinateConverterTool = lazy(() => import('./components/CoordinateConverterTool'));
+const ScientificCalculatorTool = lazy(() => import('./components/ScientificCalculatorTool'));
 
 // 获取资源路径的辅助函数
 const getAssetUrl = (path: string) => {
@@ -129,6 +130,7 @@ const TOOL_CATEGORIES: ToolCategory[] = [
         tools: [
             { id: 'table-converter', name: '表格格式转换', icon: 'table_chart', component: TableConverter },
             { id: 'math-formula', name: '数学公式编辑', icon: 'functions', component: MathFormulaEditor },
+            { id: 'scientific-calculator', name: '高级科学计算器', icon: 'calculate', component: ScientificCalculatorTool },
             { id: 'mind-map', name: '思维导图', icon: 'account_tree', component: MindMapTool },
             { id: 'drawing', name: '绘图画布', icon: 'draw', component: DrawingTool },
         ],
@@ -530,7 +532,7 @@ const App: React.FC = () => {
                 <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-gray-700">
                     <div className="flex items-center gap-4">
                         <a
-                            href="https://github.com/zstar1003/FreeTool"
+                            href="https://github.com/coolxiaoma/MaFreeTool"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center"
