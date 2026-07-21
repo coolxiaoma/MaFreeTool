@@ -36,6 +36,7 @@ const HtmlToMarkdownTool = lazy(() => import('./components/HtmlToMarkdownTool'))
 const IcoGeneratorTool = lazy(() => import('./components/IcoGeneratorTool'));
 const MermaidDiagramTool = lazy(() => import('./components/MermaidDiagramTool'));
 const MarkdownToWechatTool = lazy(() => import('./components/MarkdownToWechatTool'));
+const CoordinateConverterTool = lazy(() => import('./components/CoordinateConverterTool'));
 
 // 获取资源路径的辅助函数
 const getAssetUrl = (path: string) => {
@@ -47,7 +48,7 @@ const getAssetUrl = (path: string) => {
 const PINNED_TOOLS_KEY = 'freetool-pinned-tools';
 const ACTIVE_TOOL_KEY = 'freetool-active-tool';
 
-type CategoryType = 'text' | 'image' | 'data' | 'media' | 'markdown' | 'ai';
+type CategoryType = 'text' | 'image' | 'data' | 'media' | 'markdown' | 'gis' | 'ai';
 
 interface Tool {
     id: ToolType;
@@ -81,6 +82,14 @@ const TOOL_CATEGORIES: ToolCategory[] = [
             { id: 'html-to-markdown', name: 'HTML 转 MD', icon: 'html', component: HtmlToMarkdownTool },
             { id: 'mermaid-diagram', name: 'Mermaid 图表', icon: 'account_tree', component: MermaidDiagramTool },
             { id: 'markdown-to-wechat', name: 'MD 转公众号', icon: 'article', component: MarkdownToWechatTool },
+        ],
+    },
+    {
+        id: 'gis',
+        name: 'GIS 工具',
+        icon: 'map',
+        tools: [
+            { id: 'coordinate-converter', name: '坐标转换', icon: 'my_location', component: CoordinateConverterTool },
         ],
     },
     {
@@ -214,7 +223,7 @@ const App: React.FC = () => {
         saveActiveTool(toolId);
     }, []);
     const [showAboutDialog, setShowAboutDialog] = useState(false);
-    const [expandedCategories, setExpandedCategories] = useState<CategoryType[]>(['text', 'image', 'data', 'media', 'markdown', 'ai']);
+    const [expandedCategories, setExpandedCategories] = useState<CategoryType[]>(['markdown']);
     const [pinnedTools, setPinnedTools] = useState<ToolType[]>(loadPinnedTools);
     const [pinnedExpanded, setPinnedExpanded] = useState(true);
     const [contextMenu, setContextMenu] = useState<ContextMenuState>({

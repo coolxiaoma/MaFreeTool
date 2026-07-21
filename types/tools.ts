@@ -31,3 +31,4 @@ export type ToolType =
     | 'ico-generator'
     | 'mermaid-diagram'
     | 'markdown-to-wechat'
+    | 'coordinate-converter'

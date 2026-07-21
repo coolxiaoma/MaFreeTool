@@ -105,6 +105,11 @@ const TOOLS: Tool[] = [
         icon: 'article',
     },
     {
+        id: 'coordinate-converter',
+        name: '坐标',
+        icon: 'my_location',
+    },
+    {
         id: 'resume-generator',
         name: '简历',
         icon: 'description',
