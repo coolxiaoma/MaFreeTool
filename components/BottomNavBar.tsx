@@ -10,6 +10,11 @@ interface Tool {
 
 const TOOLS: Tool[] = [
     {
+        id: 'home',
+        name: '首页',
+        icon: 'home',
+    },
+    {
         id: 'translate',
         name: '翻译',
         icon: 'translate',

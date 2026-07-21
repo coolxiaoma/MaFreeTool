@@ -1,6 +1,7 @@
 import React, { useState, lazy, Suspense, useEffect, useCallback, useRef } from 'react';
 import BottomNavBar from './components/BottomNavBar';
 import ThemeToggle from './components/ThemeToggle';
+import HomePage from './components/HomePage';
 import { ToolType } from './types/tools';
 
 // 懒加载组件 - 提升首屏加载速度
@@ -190,19 +191,25 @@ const savePinnedTools = (pinnedTools: ToolType[]) => {
 const loadActiveTool = (): ToolType => {
     // 优先从 URL hash 读取
     const hash = window.location.hash.slice(1);
+    if (hash === 'home') {
+        return 'home';
+    }
     if (hash && TOOLS.some(tool => tool.id === hash)) {
         return hash as ToolType;
     }
     // 其次从 localStorage 读取
     try {
         const saved = localStorage.getItem(ACTIVE_TOOL_KEY);
+        if (saved === 'home') {
+            return 'home';
+        }
         if (saved && TOOLS.some(tool => tool.id === saved)) {
             return saved as ToolType;
         }
     } catch (e) {
         console.error('Failed to load active tool:', e);
     }
-    return 'translate';
+    return 'home';
 };
 
 // 保存活动工具
@@ -339,6 +346,26 @@ const App: React.FC = () => {
 
     const ActiveComponent = TOOLS.find(tool => tool.id === activeTool)?.component || TranslateTool;
 
+    const homeCategories = TOOL_CATEGORIES.map(category => ({
+        id: category.id,
+        name: category.name,
+        icon: category.icon,
+        tools: category.tools.map(tool => ({
+            id: tool.id,
+            name: tool.name,
+            icon: tool.icon,
+        })),
+    }));
+
+    const handleSelectToolFromHome = useCallback((toolId: ToolType, categoryId: string) => {
+        setActiveTool(toolId);
+        setExpandedCategories(prev =>
+            prev.includes(categoryId as CategoryType)
+                ? prev
+                : [...prev, categoryId as CategoryType]
+        );
+    }, [setActiveTool]);
+
     // 获取置顶工具的完整信息
     const getPinnedToolsInfo = () => {
         return pinnedTools
@@ -360,7 +387,11 @@ const App: React.FC = () => {
         <div className="relative flex min-h-screen w-full bg-gray-50 dark:bg-gray-900">
             <aside className="sticky top-0 h-screen w-64 flex-shrink-0 bg-gray-100 dark:bg-gray-800 border-r border-border-light dark:border-border-dark hidden md:flex flex-col">
                 {/* 顶部：Logo 和标题 - 固定 */}
-                <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <div
+                    className="flex items-center gap-3 px-6 py-4 border-b border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-gray-200/30 dark:hover:bg-gray-700/30 transition-colors"
+                    onClick={() => setActiveTool('home')}
+                    title="返回首页"
+                >
                     <picture>
                         <source srcSet={getAssetUrl('favicon.ico')} type="image/ico" />
                         <img
@@ -379,6 +410,24 @@ const App: React.FC = () => {
                 {/* 中间：工具列表 - 可滚动 */}
                 <nav className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-4">
                     <div className="flex flex-col gap-1">
+                        {/* 首页入口 */}
+                        <button
+                            onClick={() => setActiveTool('home')}
+                            className={`mb-2 flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all duration-200 ${
+                                activeTool === 'home'
+                                    ? 'bg-gray-200/50 text-gray-900 dark:bg-gray-700/50 dark:text-gray-100 shadow-sm'
+                                    : 'text-gray-500 dark:text-gray-400 hover:bg-gray-200/50 hover:text-gray-900 dark:hover:bg-gray-700/50 dark:hover:text-gray-100'
+                            }`}
+                        >
+                            <span
+                                className="material-symbols-outlined text-xl"
+                                style={activeTool === 'home' ? { fontVariationSettings: "'FILL' 1" } : {}}
+                            >
+                                home
+                            </span>
+                            <p className="text-sm font-semibold leading-normal">首页</p>
+                        </button>
+
                         {/* 置顶工具分类 */}
                         {pinnedTools.length > 0 && (
                             <div className="flex flex-col mb-2">
@@ -557,9 +606,16 @@ const App: React.FC = () => {
             <BottomNavBar activeTool={activeTool} setActiveTool={setActiveTool} />
 
             <main className="flex-1 p-6 sm:p-8 md:p-10 pb-20">
-                <Suspense fallback={<LoadingFallback />}>
-                    <ActiveComponent />
-                </Suspense>
+                {activeTool === 'home' ? (
+                    <HomePage
+                        categories={homeCategories}
+                        onSelectTool={handleSelectToolFromHome}
+                    />
+                ) : (
+                    <Suspense fallback={<LoadingFallback />}>
+                        <ActiveComponent />
+                    </Suspense>
+                )}
             </main>
 
             {/* 关于弹窗 */}

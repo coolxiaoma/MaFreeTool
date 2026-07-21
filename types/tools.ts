@@ -32,4 +32,5 @@ export type ToolType =
     | 'mermaid-diagram'
     | 'markdown-to-wechat'
     | 'coordinate-converter'
-    | 'scientific-calculator';
+    | 'scientific-calculator'
+    | 'home';
